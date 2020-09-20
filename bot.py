@@ -5,6 +5,7 @@ import threading
 
 bot = telebot.TeleBot("1371484351:AAHfwEo7BRGD_Z9mEdUPy0AEnwJ1UXRR7fc", parse_mode="HTML")
 channel_id = "-1001360940176"
+last_date = datetime.datetime.min
 
 
 def get_data(date=datetime.datetime.today(), search=True):
@@ -79,7 +80,7 @@ def testing(message):
 @bot.message_handler(commands={"deaths"})
 def deaths(message):
     data = get_data()
-    r = data.get_testing()
+    r = data.get_deaths()
     bot.send_message(message.chat.id, r)
 
 
@@ -132,18 +133,21 @@ WAIT_TIME = 60 * 60 * 8
 
 
 def channelPost():
-    print("Posting to Channel")
     data = get_data()
+    global last_date
 
-    bot.send_message(channel_id, data.summary())
-    bot.send_message(channel_id, data.get_sex_classification())
-    bot.send_message(channel_id, data.get_parishes())
-    bot.send_message(channel_id, data.get_testing())
-    bot.send_message(channel_id, data.get_deaths())
-    bot.send_message(channel_id, data.get_recoveries_active())
-    bot.send_message(channel_id, data.get_quarantine())
-    bot.send_message(channel_id, data.get_hospitals())
-    bot.send_message(channel_id, data.get_transmission())
+    if last_date is None or data.date > last_date:
+        print("Posting to Channel")
+        bot.send_message(channel_id, data.summary())
+        bot.send_message(channel_id, data.get_sex_classification())
+        bot.send_message(channel_id, data.get_parishes())
+        bot.send_message(channel_id, data.get_testing())
+        bot.send_message(channel_id, data.get_deaths())
+        bot.send_message(channel_id, data.get_recoveries_active())
+        bot.send_message(channel_id, data.get_quarantine())
+        bot.send_message(channel_id, data.get_hospitals())
+        bot.send_message(channel_id, data.get_transmission())
+        last_date = data.date
 
     threading.Timer(WAIT_TIME, channelPost).start()
 
