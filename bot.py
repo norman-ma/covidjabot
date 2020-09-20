@@ -6,13 +6,16 @@ import threading
 bot = telebot.TeleBot("1371484351:AAHfwEo7BRGD_Z9mEdUPy0AEnwJ1UXRR7fc", parse_mode="HTML")
 channel_id = "-1001360940176"
 
+
 def get_data(date=datetime.datetime.today(), search=True):
+    earliest = datetime.datetime(2020, 9, 11)
+    if date < earliest:
+        return None
+
     soup = scrape(date)
-    count = 0
-    while soup is None and search and count < 7:
+    while soup is None and search:
         date -= datetime.timedelta(days=1)
         soup = scrape(date)
-        count += 1
 
     if soup is None:
         return None
