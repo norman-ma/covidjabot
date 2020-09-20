@@ -1,7 +1,7 @@
 import telebot
 from scraper import *
 import datetime
-import time, threading
+import threading
 
 bot = telebot.TeleBot("1371484351:AAHfwEo7BRGD_Z9mEdUPy0AEnwJ1UXRR7fc", parse_mode="HTML")
 channel_id = "-1001360940176"
