@@ -2,26 +2,83 @@ import telebot
 from scraper import *
 import datetime
 import threading
+from dotenv import load_dotenv
+import os
 
-bot = telebot.TeleBot("1371484351:AAHfwEo7BRGD_Z9mEdUPy0AEnwJ1UXRR7fc", parse_mode="HTML")
-channel_id = "-1001360940176"
-last_date = datetime.datetime.min
+load_dotenv()
+bot = telebot.TeleBot(os.getenv("API_TOKEN"), parse_mode="HTML")
+channel_id = os.getenv("CHANNEL_ID")
+
+tz = datetime.timezone(datetime.timedelta(hours=-5))
+post_time = datetime.time(hour=10, tzinfo=tz)
 
 
-def get_data(date=datetime.datetime.today(), search=True):
-    earliest = datetime.datetime(2020, 9, 11)
-    if date < earliest:
+def get_delay():
+    p = datetime.datetime.combine(datetime.datetime.now(tz).date(), post_time)
+    now = datetime.datetime.now(tz)
+
+    delta = p - now
+    if delta.total_seconds() > 0:
+        return delta.total_seconds()
+    else:
+        day = datetime.timedelta(days=1).total_seconds()
+        return day + delta.total_seconds()
+
+
+class Cache:
+    date = datetime.datetime.now(tz)
+    data = scrape(date)
+
+    def update(self, date):
+        data = scrape(date)
+        if data is not None:
+            self.date = date
+            self.data = data
+            return True
+
+        return False
+
+
+cache = Cache()
+
+
+def check_cache(date):
+    global cache
+    update = False
+    if date != cache.date:
+        update = cache.update(date)
+
+    return cache.data, update
+
+
+def check_date(date):
+    earliest = datetime.date(2020, 9, 11)
+    today = datetime.date.today()
+    if date < earliest or date > today:
+        return False
+    return True
+
+
+def get_data(date=datetime.datetime.now(tz), update=False):
+
+    if not check_date(date):
         return None
 
-    soup = scrape(date)
-    while soup is None and search:
+    soup, is_update = check_cache(date)
+    while soup is None:
+        print(date)
         date -= datetime.timedelta(days=1)
-        soup = scrape(date)
+        if not check_date(date):
+            return None
+        soup, is_update = check_cache(date)
 
     if soup is None:
         return None
 
-    return parse(date, soup)
+    out = parse(cache.date, soup)
+    if update:
+        return out, is_update
+    return out
 
 
 def parse_date(string):
@@ -35,81 +92,24 @@ def parse_date(string):
     return None
 
 
-@bot.message_handler(commands=['report'])
-def report(message):
+@bot.message_handler(commands=['report', 'summary', 'cases', 'parishes', 'sex', 'testing', 'deaths', 'recovered', 'active', 'quarantine', 'hospitals', 'transmission'])
+def handle_command(message):
     data = get_data()
-    r = data.report()
-    bot.send_message(message.chat.id, r)
+    commands = ['report', 'summary', 'cases', 'parishes', 'sex', 'testing', 'deaths', 'recovered', 'active',
+                'quarantine', 'hospitals', 'transmission']
+    command = message.text.replace("/", "")
+    out = ""
+    for c in commands:
+        if c in command:
+            if c == 'report':
+                out = data.report()
+            elif c == 'summary':
+                out = data.summary()
+            else:
+                out = data.get_attr(c)
+            break
 
-
-@bot.message_handler(commands=['summary'])
-def summary(message):
-    data = get_data()
-    r = data.summary()
-    bot.send_message(message.chat.id, r)
-
-
-@bot.message_handler(commands={"cases"})
-def cases(message):
-    data = get_data()
-    r = data.get_cases()
-    bot.send_message(message.chat.id, r)
-
-
-@bot.message_handler(commands={"parishes"})
-def parishes(message):
-    data = get_data()
-    r = data.get_parishes()
-    bot.send_message(message.chat.id, r)
-
-
-@bot.message_handler(commands={"sex"})
-def sex_classification(message):
-    data = get_data()
-    r = data.get_sex_classification()
-    bot.send_message(message.chat.id, r)
-
-
-@bot.message_handler(commands={"testing"})
-def testing(message):
-    data = get_data()
-    r = data.get_testing()
-    bot.send_message(message.chat.id, r)
-
-
-@bot.message_handler(commands={"deaths"})
-def deaths(message):
-    data = get_data()
-    r = data.get_deaths()
-    bot.send_message(message.chat.id, r)
-
-
-@bot.message_handler(commands={"recovered", "active"})
-def ra(message):
-    data = get_data()
-    r = data.get_recoveries_active()
-    bot.send_message(message.chat.id, r)
-
-
-@bot.message_handler(commands={"quarantine"})
-def quarantine(message):
-    data = get_data()
-    r = data.get_quarantine()
-    bot.send_message(message.chat.id, r)
-
-
-@bot.message_handler(commands={"hospials"})
-def hospitals(message):
-    data = get_data()
-    r = data.get_hospitals()
-    bot.send_message(message.chat.id, r)
-
-
-@bot.message_handler(commands={"transmission"})
-def transmission(message):
-    data = get_data()
-    r = data.get_transmission()
-    bot.send_message(message.chat.id, r)
+    bot.send_message(message.chat.id, out)
 
 
 @bot.inline_handler(func=lambda chosen_inline_result: True)
@@ -129,14 +129,12 @@ def query_text(inline_query):
             bot.answer_inline_query(inline_query.id, [response])
 
 
-WAIT_TIME = 60 * 60 * 8
+def channel_post():
+    global cache
 
+    data, update = get_data(update=True)
 
-def channelPost():
-    data = get_data()
-    global last_date
-
-    if last_date is None or data.date > last_date:
+    if update:
         print("Posting to Channel")
         bot.send_message(channel_id, data.summary())
         bot.send_message(channel_id, data.get_sex_classification())
@@ -147,10 +145,13 @@ def channelPost():
         bot.send_message(channel_id, data.get_quarantine())
         bot.send_message(channel_id, data.get_hospitals())
         bot.send_message(channel_id, data.get_transmission())
-        last_date = data.date
 
-    threading.Timer(WAIT_TIME, channelPost).start()
+        threading.Timer(get_delay(), channel_post).start()
+
+    else:
+        print("5 Minute Delay")
+        threading.Timer(300, channel_post).start()
 
 
-channelPost()
+channel_post()
 bot.polling()

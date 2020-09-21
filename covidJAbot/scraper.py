@@ -27,10 +27,7 @@ class CovidData:
 
     def __init__(self, date, table_data):
         self.date = date
-        self.new_cases = {
-            "Meta": ["Confirmed Cases"],
-            "Confirmed Cases": extract(table_data[1])
-        }
+        self.new_cases = extract(table_data[1])
         self.sex_classification = {
             "Meta": ["Males", "Females", "Under Investigation"],
             "Males": extract(table_data[3]),
@@ -110,7 +107,7 @@ class CovidData:
     def attr_to_text(self, attr):
         out = ""
         for title in attr["Meta"]:
-            out += self.record_to_text("<b>"+title+"</b>", attr[title])
+            out += self.record_to_text(title, attr[title])
         return out
 
     def report(self):
@@ -144,6 +141,51 @@ class CovidData:
 
         return out
 
+    def get_cases(self):
+        out = "<b>COVID-19 Confirmed Cases for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n"
+        out += self.record_to_text("Confirmed Cases", self.new_cases)
+        return out
+
+    def get_sex_classification(self):
+        out = "<b>COVID-19 Case Sex Classification for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n"
+        out += self.attr_to_text(self.sex_classification)
+        return out
+
+    def get_parishes(self):
+        out = "<b>COVID-19 Parish Data for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n"
+        out += self.attr_to_text(self.parishes)
+        return out
+
+    def get_testing(self):
+        out = "<b>COVID-19 Testing Data for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n"
+        out += self.attr_to_text(self.testing)
+        return out
+
+    def get_deaths(self):
+        out = "<b>COVID-19 Deaths for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n"
+        out += self.attr_to_text(self.deaths)
+        return out
+
+    def get_recoveries_active(self):
+        out = "<b>COVID-19 Recoveries and Active Cases for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n"
+        out += self.attr_to_text(self.recoveries_active)
+        return out
+
+    def get_quarantine(self):
+        out = "<b>COVID-19 Quarantine Management Data for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n"
+        out += self.attr_to_text(self.quarantine)
+        return out
+
+    def get_hospitals(self):
+        out = "<b>COVID-19 Hospital Management Data for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n"
+        out += self.attr_to_text(self.hospitals)
+        return out
+
+    def get_transmission(self):
+        out = "<b>COVID-19 Transmission Data for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n"
+        out += self.attr_to_text(self.transmission)
+        return out
+
     def summary(self):
         out = "<b>Short COVID-19 Clinical Management Summary for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n"
 
@@ -153,52 +195,6 @@ class CovidData:
 
         return out
 
-    def get_attr(self, attr):
-        mapping = {
-            'cases': {
-                'title': "<b>COVID-19 Confirmed Cases for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n",
-                "data": self.attr_to_text(self.new_cases)
-            },
-            'sex': {
-                'title': "<b>COVID-19 Case Sex Classification for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n",
-                "data": self.attr_to_text(self.sex_classification)
-            },
-            'parishes': {
-                'title': "<b>COVID-19 Parish Data for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n",
-                "data": self.attr_to_text(self.parishes)
-            },
-            'testing':{
-                'title': "<b>COVID-19 Testing Data for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n",
-                "data": self.attr_to_text(self.testing)
-            },
-            'deaths': {
-                'title': "<b>COVID-19 Deaths for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n",
-                "data": self.attr_to_text(self.deaths)
-            },
-            'recovered': {
-                'title': "<b>COVID-19 Recoveries and Active Cases for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n",
-                "data": self.attr_to_text(self.recoveries_active)
-            },
-            'active': {
-                'title': "<b>COVID-19 Recoveries and Active Cases Cases for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n",
-                "data": self.attr_to_text(self.recoveries_active)
-            },
-            'quarantine': {
-                'title': "<b>COVID-19 Quarantine Management Data for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n",
-                "data": self.attr_to_text(self.quarantine)
-            },
-            'hospitals': {
-                'title': "<b>COVID-19 Hospital Management Data for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n",
-                "data": self.attr_to_text(self.hospitals)
-            },
-            'transmission': {
-                'title': "<b>COVID-19 Transmission Data for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n",
-                "data": self.attr_to_text(self.transmission)
-            }
-        }
-
-        data = mapping[attr]
-        return data["title"] + data["data"]
 
 def scrape(date):
 
