@@ -129,6 +129,12 @@ def query_text(inline_query):
             bot.answer_inline_query(inline_query.id, [response])
 
 
+def setup():
+    t = get_delay()
+    print("Posting in " + t + "seconds ( " + t / 60 / 60 + " hours)")
+    threading.Timer(t, channel_post).start()
+
+
 def channel_post():
     global cache
 
@@ -153,5 +159,5 @@ def channel_post():
         threading.Timer(300, channel_post).start()
 
 
-channel_post()
+setup()
 bot.polling()
