@@ -52,8 +52,8 @@ def check_cache(date):
 
 
 def check_date(date):
-    earliest = datetime.date(2020, 9, 11)
-    today = datetime.date.today()
+    earliest = datetime.datetime(2020, 9, 11)
+    today = datetime.datetime.now(tz)
     if date < earliest or date > today:
         return False
     return True
