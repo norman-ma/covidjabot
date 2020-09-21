@@ -52,7 +52,7 @@ def check_cache(date):
 
 
 def check_date(date):
-    earliest = datetime.datetime(2020, 9, 11)
+    earliest = datetime.datetime(2020, 9, 11).replace(tzinfo=tz)
     today = datetime.datetime.now(tz)
     if date < earliest or date > today:
         return False
@@ -66,7 +66,6 @@ def get_data(date=datetime.datetime.now(tz), update=False):
 
     soup, is_update = check_cache(date)
     while soup is None:
-        print(date)
         date -= datetime.timedelta(days=1)
         if not check_date(date):
             return None

@@ -116,7 +116,7 @@ class CovidData:
     def report(self):
         out = "<b>COVID-19 Clinical Management Summary for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n"
 
-        out += self.record_to_text("Confirmed Cases", self.new_cases)
+        out += self.attr_to_text(self.new_cases)
 
         out += "\n<b>Sex Classification</b>\n"
         out += self.attr_to_text(self.sex_classification)
@@ -147,9 +147,11 @@ class CovidData:
     def summary(self):
         out = "<b>Short COVID-19 Clinical Management Summary for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n"
 
-        out += self.record_to_text("<b>Confirmed Cases</b>", self.new_cases)
+        out += self.record_to_text("<b>Confirmed Cases</b>", self.new_cases["Confirmed Cases"])
         out += self.record_to_text("<b>Deaths</b>", self.deaths["Deaths"])
         out += self.record_to_text("<b>Recovered</b>", self.recoveries_active["Recovered"])
+        out += self.record_to_text("<b>Recovered</b>", self.recoveries_active["Recovered"])
+
 
         return out
 
@@ -199,6 +201,7 @@ class CovidData:
 
         data = mapping[attr]
         return data["title"] + data["data"]
+
 
 def scrape(date):
 
