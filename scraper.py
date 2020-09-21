@@ -150,8 +150,6 @@ class CovidData:
         out += self.record_to_text("<b>Confirmed Cases</b>", self.new_cases["Confirmed Cases"])
         out += self.record_to_text("<b>Deaths</b>", self.deaths["Deaths"])
         out += self.record_to_text("<b>Recovered</b>", self.recoveries_active["Recovered"])
-        out += self.record_to_text("<b>Recovered</b>", self.recoveries_active["Recovered"])
-
 
         return out
 
