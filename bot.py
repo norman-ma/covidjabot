@@ -131,7 +131,7 @@ def query_text(inline_query):
 
 def setup():
     t = get_delay()
-    print("Posting in " + t + "seconds ( " + t / 60 / 60 + " hours)")
+    print("Posting in ", t, " seconds ( ", t / 60 / 60, " hours)")
     threading.Timer(t, channel_post).start()
 
 
