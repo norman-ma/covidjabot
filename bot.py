@@ -8,7 +8,7 @@ import os
 load_dotenv()
 bot = telebot.TeleBot(os.getenv("API_TOKEN"), parse_mode="HTML")
 channel_id = os.getenv("CHANNEL_ID")
-owners = os.getenv("OWNERS").split(sep=",")
+owners = [int(x) for x in str(os.getenv("OWNERS").split(sep=","))]
 
 tz = datetime.timezone(datetime.timedelta(hours=-5))
 post_time = datetime.time(hour=10, tzinfo=tz)
