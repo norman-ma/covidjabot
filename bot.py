@@ -8,6 +8,7 @@ import os
 load_dotenv()
 bot = telebot.TeleBot(os.getenv("API_TOKEN"), parse_mode="HTML")
 channel_id = os.getenv("CHANNEL_ID")
+owners = os.getenv("OWNERS").split(sep=",")
 
 tz = datetime.timezone(datetime.timedelta(hours=-5))
 post_time = datetime.time(hour=10, tzinfo=tz)
@@ -111,6 +112,16 @@ def handle_command(message):
     bot.send_message(message.chat.id, out)
 
 
+@bot.message_handler(commands=['post'])
+def post(message):
+    global owners
+    if message.from_user.id in owners:
+        channel_post()
+        bot.send_message(message.chat.id, "Post Sent")
+    else:
+        bot.send_message(message.chat.id, "Authorization required")
+
+
 @bot.inline_handler(func=lambda chosen_inline_result: True)
 def query_text(inline_query):
     date = parse_date(inline_query.query)
@@ -142,14 +153,14 @@ def channel_post():
     if update:
         print("Posting to Channel")
         bot.send_message(channel_id, data.summary())
-        bot.send_message(channel_id, data.get_sex_classification())
-        bot.send_message(channel_id, data.get_parishes())
-        bot.send_message(channel_id, data.get_testing())
-        bot.send_message(channel_id, data.get_deaths())
-        bot.send_message(channel_id, data.get_recoveries_active())
-        bot.send_message(channel_id, data.get_quarantine())
-        bot.send_message(channel_id, data.get_hospitals())
-        bot.send_message(channel_id, data.get_transmission())
+        bot.send_message(channel_id, data.get_attr("sex"))
+        bot.send_message(channel_id, data.get_attr("parishes"))
+        bot.send_message(channel_id, data.get_attr("testing"))
+        bot.send_message(channel_id, data.get_attr("deaths"))
+        bot.send_message(channel_id, data.get_attr("recovered"))
+        bot.send_message(channel_id, data.get_attr("quarantine"))
+        bot.send_message(channel_id, data.get_attr("hospitals"))
+        bot.send_message(channel_id, data.get_attr("transmission"))
 
         threading.Timer(get_delay(), channel_post).start()
 
