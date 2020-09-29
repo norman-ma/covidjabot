@@ -92,10 +92,10 @@ def parse_date(string):
     return None
 
 
-@bot.message_handler(commands=['report', 'summary', 'cases', 'parishes', 'sex', 'testing', 'deaths', 'recovered', 'active', 'quarantine', 'hospitals', 'transmission'])
+@bot.message_handler(commands=['report', 'summary', 'cases', 'parishes', 'sex', 'testing', 'deaths', 'recoveries', 'active', 'quarantine', 'hospitals', 'transmission'])
 def handle_command(message):
     data = get_data()
-    commands = ['report', 'summary', 'cases', 'parishes', 'sex', 'testing', 'deaths', 'recovered', 'active',
+    commands = ['report', 'summary', 'cases', 'parishes', 'sex', 'testing', 'deaths', 'recoveries', 'active',
                 'quarantine', 'hospitals', 'transmission']
     command = message.text.replace("/", "")
     out = ""
@@ -157,7 +157,7 @@ def channel_post():
         bot.send_message(channel_id, data.get_attr("parishes"))
         bot.send_message(channel_id, data.get_attr("testing"))
         bot.send_message(channel_id, data.get_attr("deaths"))
-        bot.send_message(channel_id, data.get_attr("recovered"))
+        bot.send_message(channel_id, data.get_attr("recoveries"))
         bot.send_message(channel_id, data.get_attr("quarantine"))
         bot.send_message(channel_id, data.get_attr("hospitals"))
         bot.send_message(channel_id, data.get_attr("transmission"))
