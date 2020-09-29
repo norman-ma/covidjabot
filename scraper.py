@@ -8,14 +8,12 @@ def extract(line):
     if len(line) == 1:
         data = {"24 Hours": to_val(line[0])}
         return data
-    if len(line) == 2 or line[2] == "":
+    elif len(line) == 2 or line[2] == "" or "below" in line[2] or "details" in line[2]:
         data = {"24 Hours": to_val(line[0]), "Overall": to_val(line[1])}
         return data
-    if len(line) == 3:
+    else:
         data = {"24 Hours": to_val(line[0]), "Overall": to_val(line[1]), "Notes": to_val(line[2])}
         return data
-    else:
-        return line
 
 
 def search_extract(table_data, keyword):
