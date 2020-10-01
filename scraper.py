@@ -124,7 +124,7 @@ class CovidData:
         title = {
             'cases': "<b>COVID-19 Confirmed Cases for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n",
             'sex': "<b>COVID-19 Case Sex Classification for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n",
-            'parishes': "<b>COVID-19 Parish Data for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n",
+            'parish': "<b>COVID-19 Parish Data for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n",
             'testing': "<b>COVID-19 Testing Data for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n",
             'deaths': "<b>COVID-19 Deaths for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n",
             'recoveries': "<b>COVID-19 Recoveries and Active Cases for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n",
