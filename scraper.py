@@ -130,16 +130,26 @@ class CovidData:
             'recoveries': "<b>COVID-19 Recoveries and Active Cases for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n",
             'active': "<b>COVID-19 Recoveries and Active Cases Cases for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n",
             'quarantine': "<b>COVID-19 Quarantine Management Data for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n",
-            'hospitals': "<b>COVID-19 Hospital Management Data for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n",
+            'hospital': "<b>COVID-19 Hospital Management Data for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n",
             'transmission': "<b>COVID-19 Transmission Data for " + self.date.strftime("%A, %B %d, %Y") + "</b>\n\n"
         }
 
         return title[attr] + self.attr_to_text(attr)
 
 
+def url_format(date):
+
+    day = date.strftime("%d")
+    if day[0] == '0':
+        day = day[1:]
+
+    date_str = date.strftime("%A-%B-" + day + "-%Y").lower()
+    return date_str;
+
+
 def scrape(date):
 
-    date_str = date.strftime("%A-%B-%d-%Y").lower()
+    date_str = url_format(date)
     url = "https://www.moh.gov.jm/covid-19-clinical-management-summary-for-" + date_str + "/"
     print("Scraping " + url + " ...")
 

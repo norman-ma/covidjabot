@@ -92,11 +92,11 @@ def parse_date(string):
     return None
 
 
-@bot.message_handler(commands=['report', 'summary', 'cases', 'parish', 'sex', 'testing', 'deaths', 'recoveries', 'active', 'quarantine', 'hospitals', 'transmission'])
+@bot.message_handler(commands=['report', 'summary', 'cases', 'parish', 'sex', 'testing', 'deaths', 'recoveries', 'active', 'quarantine', 'hospital', 'transmission'])
 def handle_command(message):
     data = get_data()
     commands = ['report', 'summary', 'cases', 'parish', 'sex', 'testing', 'deaths', 'recoveries', 'active',
-                'quarantine', 'hospitals', 'transmission']
+                'quarantine', 'hospital', 'transmission']
     command = message.text.replace("/", "")
     out = ""
     for c in commands:
